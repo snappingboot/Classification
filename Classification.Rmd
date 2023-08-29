@@ -1,0 +1,120 @@
+---
+title: "Classification"
+author: "Ryan Kurtzman"
+date: '2023-08-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+```{r}
+data <- read_csv("university_enrollment_2306.csv")
+```
+```{r}
+#count_na <- sapply(data, function(x) sum(is.na(x)))
+count_na <- data %>%
+  summarise_all(~sum(is.na(.)))
+```
+#### **Data**
+
+This dataset contains 8 columns and 1850 rows, I have checked each column against what it should be and cleaned accordingly:
+
+- course_id: No missing values, values were interpreted as characters, changed to factor
+- course_type: No missing values, values were interpreted as character, changed to factor
+- year: No missing values, values are interpreted as numeric and converted to factor
+- enrollment_count: No missing values, values are numeric
+- pre_score: 130 missing values changed to 0, values are interpreted as character and changed to numeric
+- post_score: 185 missing values changed to 0, values are numeric
+- pre_requirement: 89 missing values changed to None, values are interpreted as character, changed to factor
+- department: No missing values, Math is changed to Mathematics, values are character, changed to factor
+
+
+```{r}
+data[data=="-"] <- NA
+
+clean <- data %>%
+  mutate(course_type = replace_na(course_type, "classroom"),
+         pre_score = replace_na(pre_score, '0'),
+         post_score = replace_na(post_score, 0),
+         pre_requirement = replace_na(pre_requirement, "None"),
+         department = replace(department, department == "Math", "Mathematics"))  %>%
+  mutate(course_id = factor(course_id),
+         course_type = factor(course_type),
+         year = factor(year),
+         pre_score = as.numeric(pre_score),
+         pre_requirement = factor(pre_requirement),
+         department = factor(department))
+```
+#### **Visualizations**
+```{r}
+ggplot(clean, aes(x=enrollment_count))+
+  geom_histogram(fill = "cadetblue", color = "black")+
+  labs(title = "Figure 1.1: Distribution of Enrollment Count", x = "Enrollment Count", y = "Count")
+```
+This appears to have two separate distributions together, rerunning the code and coloring by course type yields an easier to view distribution.
+```{r}
+ggplot(clean, aes(x=enrollment_count, fill = course_type))+
+  geom_histogram(color = "black")+
+  labs(title = "Figure 1.2: Distribution of Enrollment Count by Course Type", x = "Enrollment Count", y = "Count")
+```
+This shows that online had much higher enrollment counts than classroom courses. The minimum course enrollment for online classes is around 30 people higher than the maximum for classroom courses. Both of these distributions are relatively small, with in person classes being centered around 170 and online classes being centered around 250.
+
+```{r}
+ggplot(clean, aes(x = course_type))+
+  geom_bar(fill = "cadetblue", color = "black")+
+  labs(title = "Figure 2: Number of Classes by Course Type", x = "Course Type", y = "Number of Classes")
+```
+From this graph we can see that there were far more online classes than in person classes, almost three times as many. This means that observations are not balanced across course type.
+
+```{r}
+ggplot(clean, aes(x = course_type, y = enrollment_count))+
+  geom_boxplot(fill = "cadetblue", color = "black")+
+  labs(title = "Figure 3: Enrollment Count Distributions by Course Type", x = "Course Type", y = "Enrollment Count")
+```
+Both figures 3 and 1.2 show that online courses have much higher enrollment counts than in person classes.
+
+#### **Models**
+
+Predicting how many students will enroll is a regression type problem in machine learning.
+
+```{r}
+partition <- sample(c(T,F), nrow(clean), replace=T, prob = c(.7,.3))
+training_sample <- clean[partition,]
+testing_sample <- clean[!partition,]
+```
+
+
+```{r}
+reg_formula <- enrollment_count ~ course_type + pre_score + post_score + pre_requirement + department + year
+reg1 <- lm(data = training_sample, reg_formula)
+pred_reg <- predict(reg1, testing_sample)
+pred_frame <- data.frame(testing_sample$enrollment_count, pred_reg)
+rmse_reg <- sqrt(mean((pred_frame$testing_sample.enrollment_count - pred_frame$pred_reg)^2))
+```
+
+
+```{r}
+tree_spec <- decision_tree() %>% 
+  set_engine("rpart") %>% 
+  set_mode("regression")
+
+tree_model <- tree_spec %>% 
+fit(data = clean, reg_formula)
+```
+
+```{r}
+pred_tree <- predict(tree_model, testing_sample)
+pred_tree_frame <- data.frame(testing_sample$enrollment_count, pred_tree)
+rmse_tree <- sqrt(mean((pred_frame$testing_sample.enrollment_count - pred_tree_frame$.pred)^2))
+```
+
+
+For the baseline model I chose a linear regression model because it is quite simple to perform and see the results of. Using this model we find a root mean squared error of `r round(rmse_reg, 3)`. For the comparison model I used a tree based regression model because it can capture more complex relationships between the variables rather quickly. The tree based regression model had a root mean squared error of `r round(rmse_tree, 3)`. As the linear regression model had the lower RMSE, it is superior in predicitng enrollment.
+
+
