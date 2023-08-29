@@ -25,24 +25,29 @@ column against what it should be and cleaned accordingly:
 
 #### **Visualizations**
 
-![](Classification_files/figure-gfm/unnamed-chunk-5-1.png)<!-- --> This
-appears to have two separate distributions together, rerunning the code
-and coloring by course type yields an easier to view distribution.
-![](Classification_files/figure-gfm/unnamed-chunk-6-1.png)<!-- --> This
-shows that online had much higher enrollment counts than classroom
+![](Classification_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+This appears to have two separate distributions together, rerunning the
+code and coloring by course type yields an easier to view distribution.
+
+![](Classification_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This shows that online had much higher enrollment counts than classroom
 courses. The minimum course enrollment for online classes is around 30
 people higher than the maximum for classroom courses. Both of these
 distributions are relatively small, with in person classes being
 centered around 170 and online classes being centered around 250.
 
-![](Classification_files/figure-gfm/unnamed-chunk-7-1.png)<!-- --> From
-this graph we can see that there were far more online classes than in
-person classes, almost three times as many. This means that observations
-are not balanced across course type.
+![](Classification_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-![](Classification_files/figure-gfm/unnamed-chunk-8-1.png)<!-- --> Both
-figures 3 and 1.2 show that online courses have much higher enrollment
-counts than in person classes.
+From this graph we can see that there were far more online classes than
+in person classes, almost three times as many. This means that
+observations are not balanced across course type.
+
+![](Classification_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+Both figures 3 and 1.2 show that online courses have much higher
+enrollment counts than in person classes.
 
 #### **Models**
 
@@ -51,9 +56,9 @@ machine learning.
 
 For the baseline model I chose a linear regression model because it is
 quite simple to perform and see the results of. Using this model we find
-a root mean squared error of 0.327. For the comparison model I used a
+a root mean squared error of 0.317. For the comparison model I used a
 tree based regression model because it can capture more complex
 relationships between the variables rather quickly. The tree based
-regression model had a root mean squared error of 6.572. As the linear
+regression model had a root mean squared error of 6.529. As the linear
 regression model had the lower RMSE, it is superior in predicitng
 enrollment.

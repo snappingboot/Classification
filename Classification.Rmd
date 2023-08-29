@@ -57,12 +57,15 @@ ggplot(clean, aes(x=enrollment_count))+
   geom_histogram(fill = "cadetblue", color = "black")+
   labs(title = "Figure 1.1: Distribution of Enrollment Count", x = "Enrollment Count", y = "Count")
 ```
+
 This appears to have two separate distributions together, rerunning the code and coloring by course type yields an easier to view distribution.
+
 ```{r}
 ggplot(clean, aes(x=enrollment_count, fill = course_type))+
   geom_histogram(color = "black")+
   labs(title = "Figure 1.2: Distribution of Enrollment Count by Course Type", x = "Enrollment Count", y = "Count")
 ```
+
 This shows that online had much higher enrollment counts than classroom courses. The minimum course enrollment for online classes is around 30 people higher than the maximum for classroom courses. Both of these distributions are relatively small, with in person classes being centered around 170 and online classes being centered around 250.
 
 ```{r}
@@ -70,6 +73,7 @@ ggplot(clean, aes(x = course_type))+
   geom_bar(fill = "cadetblue", color = "black")+
   labs(title = "Figure 2: Number of Classes by Course Type", x = "Course Type", y = "Number of Classes")
 ```
+
 From this graph we can see that there were far more online classes than in person classes, almost three times as many. This means that observations are not balanced across course type.
 
 ```{r}
@@ -77,6 +81,7 @@ ggplot(clean, aes(x = course_type, y = enrollment_count))+
   geom_boxplot(fill = "cadetblue", color = "black")+
   labs(title = "Figure 3: Enrollment Count Distributions by Course Type", x = "Course Type", y = "Enrollment Count")
 ```
+
 Both figures 3 and 1.2 show that online courses have much higher enrollment counts than in person classes.
 
 #### **Models**
