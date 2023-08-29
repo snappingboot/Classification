@@ -2,7 +2,7 @@
 title: "Classification"
 author: "Ryan Kurtzman"
 date: '2023-08-02'
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
